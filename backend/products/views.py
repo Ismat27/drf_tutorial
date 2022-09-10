@@ -1,17 +1,18 @@
-from rest_framework import generics, authentication, permissions
+from rest_framework import generics
 from rest_framework.mixins import ListModelMixin, CreateModelMixin,\
      UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin
 
+from api.mixins import StaffEditorPermissionMixin
 from .models import Product
 from .serializers import ProductSerializer
-from .permissions import IsStaffEditorPermission
 
 # Create your views here.
-class ProductListCreateAPIView(generics.ListCreateAPIView):
+class ProductListCreateAPIView(
+    StaffEditorPermissionMixin,
+    generics.ListCreateAPIView
+):
     queryset = Product.objects.all().order_by("?")
     serializer_class = ProductSerializer
-    authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [IsStaffEditorPermission]
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
@@ -93,7 +94,10 @@ class SingleProductMixin(RetrieveModelMixin,
         print('deleted')
         print(instance.title)
 
-class RetrieveUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
+class RetrieveUpdateDelete(
+    StaffEditorPermissionMixin,
+    generics.RetrieveUpdateDestroyAPIView
+):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
