@@ -4,7 +4,8 @@ from .views import ProductDetailAPIView, ProductListCreateAPIView,\
     SingleProductMixin, RetrieveUpdateDelete
 
 urlpatterns = [
-    path('', ProductMixins.as_view()),
+    path('', ProductListCreateAPIView.as_view()),
+    # path('', ProductMixins.as_view()),
     # path('<int:pk>/', SingleProductMixin.as_view()),
     path('<int:pk>/', RetrieveUpdateDelete.as_view()),
     path('<int:pk>/update/', ProductUpdateAPIView.as_view()),

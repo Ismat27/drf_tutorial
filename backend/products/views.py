@@ -1,13 +1,17 @@
-from .models import Product
-from .serializers import ProductSerializer
-from rest_framework import generics
+from rest_framework import generics, authentication, permissions
 from rest_framework.mixins import ListModelMixin, CreateModelMixin,\
      UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin
+
+from .models import Product
+from .serializers import ProductSerializer
+from .permissions import IsStaffEditorPermission
 
 # Create your views here.
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all().order_by("?")
     serializer_class = ProductSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [IsStaffEditorPermission]
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
