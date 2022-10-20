@@ -7,5 +7,5 @@ post_json = {
     # "content": "awesome and expensive wrist watch",
     "price": 152.99
 }
-get_response = requests.post(endpoint, params={'search_term': 'html'}, json=post_json)
+get_response = requests.post(endpoint, json=post_json)
 print(get_response.json())

@@ -13,9 +13,10 @@ def home(request, *args, **kwargs):
             # instance = serializer.save()
             return Response(serializer.data)
         else:
-            return Response({})
+            return Response({"message": "invalid data"}, status=400)
     instance = Product.objects.all().order_by("?")
     data = []
     if instance:
-        data = [ProductSerializer(item).data for item in instance]
+        # data = [ProductSerializer(item).data for item in instance]
+        data = ProductSerializer(instance, many=True).data
     return Response(data)
