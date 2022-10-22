@@ -3,6 +3,9 @@ from .serializers import ProductSerializer
 from rest_framework import generics
 from rest_framework.mixins import ListModelMixin, CreateModelMixin,\
      UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 class ProductListCreateAPIView(generics.ListCreateAPIView):
@@ -98,10 +101,30 @@ class RetrieveUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
         instance = serializer.save()
         if not instance.content:
             instance.content = instance.title
-            instance.save()
 
     def perform_destroy(self, instance):
         print(f'{instance.title} deleted')
         return super().perform_destroy(instance)
 
+@api_view(['GET', 'DELETE', 'PUT'])
+def _api(request, *args, **kwargs):
+    pk = kwargs.get('pk')
+    instance = get_object_or_404(Product, pk=pk)
+    if instance.DoesNotExist:
+        Response(ProductSerializer(instance).data)
 
+    if request.method == 'GET':
+        serializer = ProductSerializer(instance)
+        data = serializer.data
+        return Response(data)
+    
+    elif request.method == 'PUT':
+        serializer = ProductSerializer(instance, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        return Response(serializer.data)
+    else:
+        instance.delete()
+        return Response({
+            'message': 'success'
+        })
