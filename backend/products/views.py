@@ -15,11 +15,12 @@ class ProductListCreateAPIView(
     serializer_class = ProductSerializer
 
     def perform_create(self, serializer):
+        user = self.request.user
         title = serializer.validated_data.get('title')
         content = serializer.validated_data.get('content', None)
         if not content:
             content = title
-        serializer.save(content=content)
+        serializer.save(user=user,content=content)
 
 class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
