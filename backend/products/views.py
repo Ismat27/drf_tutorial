@@ -98,6 +98,8 @@ class RetrieveUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
     lookup_field = 'pk'
 
+    permission_classes = [IsStaffEditorPermission]
+
     def perform_update(self, serializer):
         instance = serializer.save()
         if not instance.content:
@@ -107,5 +109,3 @@ class RetrieveUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
     def perform_destroy(self, instance):
         print(f'{instance.title} deleted')
         return super().perform_destroy(instance)
-
-
