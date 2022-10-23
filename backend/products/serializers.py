@@ -2,20 +2,28 @@ from turtle import title
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from .models import Product
+from api.serializers import UserPublicSerializer
+
+
+class RelatedProductSerializer(serializers.Serializer):
+    title = serializers.CharField(read_only=True)
+    price = serializers.DecimalField(decimal_places=2, max_digits=15,read_only=True)
 
 class ProductSerializer(serializers.ModelSerializer):
+    owner = UserPublicSerializer(source='user', read_only=True)
     product_discount = serializers.SerializerMethodField(read_only=True)
-    product_url = serializers.SerializerMethodField(read_only=True)
-    url = serializers.HyperlinkedIdentityField(
-        view_name='product',
-        lookup_field='pk'
-    )
+    # product_url = serializers.SerializerMethodField(read_only=True)
+    # url = serializers.HyperlinkedIdentityField(
+    #     view_name='product',
+    #     lookup_field='pk'
+    # )
     class Meta:
         model = Product
         fields = [
+            'owner',
             'id',
-            'url',
-            'product_url',
+            # 'url',
+            # 'product_url',
             'title',
             'content',
             'price',
@@ -25,13 +33,12 @@ class ProductSerializer(serializers.ModelSerializer):
     
     def validate_title(self, value):
         request = self.context.get('request')
+        if request.method != 'POST':
+            return value
         user = request.user
-        print(user)
         qs = Product.objects.filter(user=user, title__iexact=value)
         if qs:
             raise serializers.ValidationError('product with same title already exists')
-        # if len(value) < 5:
-        #     raise serializers.ValidationError('title too short')
         return value
     
     def get_product_discount(self, obj):
@@ -46,3 +53,6 @@ class ProductSerializer(serializers.ModelSerializer):
         if request is None:
             return None
         return reverse('product', kwargs={'pk': obj.pk}, request=request)
+
+    # def get_related_products(self, obj):
+    #     qs = Product.objects.filter()

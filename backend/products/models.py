@@ -3,6 +3,12 @@ from django.conf import settings
 
 User = settings.AUTH_USER_MODEL
 
+class ProductCategory(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f'{self.name}'
+
 # Create your models here.
 class Product(models.Model):
     user = models.ForeignKey(User, default=1, null=True, on_delete=models.SET_NULL)

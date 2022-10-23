@@ -12,7 +12,8 @@ json = {
 }
 auth_response = requests.post(auth_endpoint, json=json)
 post_json = {
-    # "title": "pearls shoes",
+    "title": "addidas shoes",
+    "a": "abc",
     "content": "awesome and expensive wrist watch",
     "price": 152.99
 }
